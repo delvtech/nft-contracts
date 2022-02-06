@@ -1,6 +1,5 @@
 import { MerkleTree } from "merkletreejs";
-import { BigNumberish } from "@ethersproject/contracts/node_modules/@ethersproject/bignumber";
-import { ethers } from "ethers";
+import { BigNumberish, ethers } from "ethers";
 
 export interface Account {
   address: string;
