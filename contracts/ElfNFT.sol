@@ -8,8 +8,6 @@ import "./Authorizable.sol";
 contract ElfNFT is ERC721, Authorizable {
     using Strings for uint256;
 
-    // TODO: add merkle root stuff
-
     /// @notice constructor
     /// @param _name the name of the NFT
     /// @param _symbol the symbol of the NFT
