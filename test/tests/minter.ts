@@ -114,4 +114,44 @@ describe("Minter", function () {
       expect(owner).to.equal(wallet1.address);
     });
   });
+
+  describe("setMerkleRoot", async () => {
+    it("onlyOwner should set merkleRoot", async () => {
+      minter = minter.connect(deployer);
+      const signers = provider.getWallets();
+      const accounts: Account[] = [];
+      for (const i in signers) {
+        accounts.push({
+          address: signers[i].address,
+          value: i + 1,
+        });
+      }
+      const newMerkleTree = await getMerkleTree(accounts);
+      const newMerkleRoot = newMerkleTree.getHexRoot();
+      await minter.setRewardsRoot(newMerkleRoot);
+      const newRoot = await minter.merkleRoot();
+
+      expect(newMerkleRoot).to.equal(newRoot);
+    });
+
+    it("not owner should not set merkleRoot", async () => {
+      // incorrect owner
+      minter = minter.connect(wallet1);
+      const signers = provider.getWallets();
+      const accounts: Account[] = [];
+      for (const i in signers) {
+        accounts.push({
+          address: signers[i].address,
+          value: i + 1,
+        });
+      }
+      const newMerkleTree = await getMerkleTree(accounts);
+      const newMerkleRoot = newMerkleTree.getHexRoot();
+      try {
+        await minter.setRewardsRoot(newMerkleRoot);
+      } catch (error) {
+        expect((error as Error)?.message).to.include("Sender not owner");
+      }
+    });
+  });
 });

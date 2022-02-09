@@ -4,17 +4,17 @@ pragma solidity >=0.8.0;
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import "./ElfNFT.sol";
 
-contract Minter {
+contract Minter is Authorizable {
     // The ERC721 contract to mint
     ElfNFT public immutable elfNFT;
 
     // The merkle root with deposits encoded into it as hash [address, tokenId]
     // Assumed to be a node sorted tree
-    bytes32 public rewardsRoot;
+    bytes32 public merkleRoot;
 
-    constructor(address _token, bytes32 _rewardsRoot) {
+    constructor(address _token, bytes32 _merkleRoot) {
         elfNFT = ElfNFT(_token);
-        rewardsRoot = _rewardsRoot;
+        merkleRoot = _merkleRoot;
     }
 
     /// @notice mints an NFT for an approved account in the merkle tree
@@ -27,11 +27,15 @@ contract Minter {
 
         // Verify the proof for this leaf
         require(
-            MerkleProof.verify(merkleProof, rewardsRoot, leafHash),
+            MerkleProof.verify(merkleProof, merkleRoot, leafHash),
             "Invalid Proof"
         );
 
         // mint the token, assuming it hasn't already been minted
         elfNFT.mint(msg.sender, tokenId);
+    }
+
+    function setRewardsRoot(bytes32 _merkleRoot) public onlyOwner {
+        merkleRoot = _merkleRoot;
     }
 }
