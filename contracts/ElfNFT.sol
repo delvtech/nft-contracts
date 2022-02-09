@@ -16,7 +16,7 @@ contract ElfNFT is ERC721, Authorizable {
         string memory _symbol,
         address _owner
     ) ERC721(_name, _symbol) {
-        owner = _owner;
+        setOwner(_owner);
     }
 
     /// @notice retrieves the tokenURI, which will be a concatenation of the
@@ -24,8 +24,7 @@ contract ElfNFT is ERC721, Authorizable {
     /// @param tokenId an identifier for the token
     function tokenURI(uint256 tokenId)
         public
-        view
-        virtual
+        pure
         override
         returns (string memory)
     {
