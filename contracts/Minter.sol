@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity >=0.8.0;
 
-import "@rari-capital/solmate/src/tokens/ERC721.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import "./ElfNFT.sol";
 
@@ -19,6 +18,9 @@ contract Minter {
     }
 
     /// @notice mints an NFT for an approved account in the merkle tree
+    /// @param tokenId the unique id for the token
+    /// @param merkleProof the merkle proof associated with the sender's address
+    /// and tokenId that validates minting
     function mint(uint256 tokenId, bytes32[] memory merkleProof) public {
         // Hash the user plus the token id
         bytes32 leafHash = keccak256(abi.encodePacked(msg.sender, tokenId));

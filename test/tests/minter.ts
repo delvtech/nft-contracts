@@ -1,21 +1,41 @@
 import { expect } from "chai";
-import { ethers, waffle } from "hardhat";
+import { waffle } from "hardhat";
+import { MerkleTree } from "merkletreejs";
+import { Account, getMerkleTree } from "test/helpers/merkle";
 import { createSnapshot, restoreSnapshot } from "test/helpers/snapshots";
-import { ElfToken, Minter } from "typechain";
+import {
+  ElfNFT,
+  ElfNFT__factory,
+  Minter,
+  Minter__factory,
+} from "typechain-types";
 
 const { provider } = waffle;
 
 describe("Minter", function () {
-  let elfNFT: ElfToken;
+  let elfNFT: ElfNFT;
   let minter: Minter;
+  let merkleTree: MerkleTree;
 
-  const [deployer, wallet1] = provider.getWallets();
+  const [deployer, wallet1, wallet2] = provider.getWallets();
 
   before(async function () {
     await createSnapshot(provider);
 
-    const tokenDeployer = await ethers.getContractFactory("ElfToken", deployer);
-    const minterDeployer = await ethers.getContractFactory("Minter", deployer);
+    const signers = provider.getWallets();
+    const accounts: Account[] = [];
+    for (const i in signers) {
+      accounts.push({
+        address: signers[i].address,
+        value: i,
+      });
+    }
+
+    merkleTree = await getMerkleTree(accounts);
+    const merkleRoot = merkleTree.getHexRoot();
+
+    const tokenDeployer = new ElfNFT__factory(deployer);
+    const minterDeployer = new Minter__factory(deployer);
 
     elfNFT = await tokenDeployer.deploy(
       "Elfie NFT",
@@ -23,7 +43,7 @@ describe("Minter", function () {
       deployer.address
     );
 
-    minter = await minterDeployer.deploy(elfNFT.address);
+    minter = await minterDeployer.deploy(elfNFT.address, merkleRoot);
     await elfNFT.setOwner(minter.address);
   });
 
@@ -42,21 +62,54 @@ describe("Minter", function () {
   interface Error {
     message: string;
   }
+
   describe("mint", async () => {
     // The ERC721 should not be able to mint tokens directly
     it("token should not mint an NFT", async () => {
       elfNFT.connect(wallet1);
       try {
-        await elfNFT.mint(wallet1.address, "1");
+        await elfNFT.mint(wallet1.address, 1);
       } catch (error) {
-        expect((error as Error)?.message).to.include("Sender not owner'");
+        expect((error as Error)?.message).to.include("Sender not owner");
+      }
+    });
+
+    it("minter should not mint an NFT", async () => {
+      // incorrect signer
+      minter = minter.connect(wallet2);
+      const leaves = merkleTree.getLeaves();
+      const merkleProof = merkleTree.getHexProof(leaves[1]);
+      try {
+        await minter.mint(1, merkleProof);
+      } catch (error) {
+        expect((error as Error)?.message).to.include("Invalid Proof");
+      }
+    });
+
+    it("minter should not mint an NFT twice", async () => {
+      minter = minter.connect(wallet1);
+      const leaves = merkleTree.getLeaves();
+      const merkleProof = merkleTree.getHexProof(leaves[1]);
+      await minter.mint(1, merkleProof);
+
+      // mint the first one
+      const owner = await elfNFT.ownerOf(1);
+      expect(owner).to.equal(wallet1.address);
+
+      // should fail minting again
+      try {
+        await minter.mint(1, merkleProof);
+      } catch (error) {
+        expect((error as Error)?.message).to.include("ALREADY_MINTED");
       }
     });
 
     it("minter should mint an NFT", async () => {
-      minter.connect(wallet1);
-      await minter.mint(wallet1.address, "1");
-      const owner = await elfNFT.ownerOf("1");
+      minter = minter.connect(wallet1);
+      const leaves = merkleTree.getLeaves();
+      const merkleProof = merkleTree.getHexProof(leaves[1]);
+      await minter.mint(1, merkleProof);
+      const owner = await elfNFT.ownerOf(1);
 
       expect(owner).to.equal(wallet1.address);
     });
