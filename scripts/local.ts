@@ -23,7 +23,6 @@ async function main() {
 
   const leaves = merkleTree.getLeaves();
   const proofs = leaves.map((leaf) => merkleTree.getHexProof(leaf));
-  // console.log(merkleTree.verify(proof, leaves[0], merkleRoot));
 
   // Deploy contracts
   const elfNFT = await tokenDeployer.deploy(
