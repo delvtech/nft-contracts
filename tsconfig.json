@@ -12,11 +12,13 @@
         "test/*": ["./test/*"],
         "typechain": ["./typechain"],
         "typechain/*": ["./typechain/*"],
+        "scripts/*": ["./scripts/*"]
       },
     },
     "include": [
       "./test",
-      "./typechain"
+      "./typechain",
+      "./scripts"
     ],
     "files": ["./hardhat.config.ts"]
   }
