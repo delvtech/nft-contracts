@@ -12,12 +12,14 @@ import {
 
 const { provider } = waffle;
 
+const MAX_NFTS = 2;
+
 describe("Minter", function () {
   let elfNFT: ElfNFT;
   let minter: Minter;
   let merkleTree: MerkleTree;
 
-  const [deployer, wallet1, wallet2] = provider.getWallets();
+  const [deployer, wallet1, wallet2, wallet3] = provider.getWallets();
 
   before(async function () {
     await createSnapshot(provider);
@@ -43,7 +45,7 @@ describe("Minter", function () {
       deployer.address
     );
 
-    minter = await minterDeployer.deploy(elfNFT.address, merkleRoot);
+    minter = await minterDeployer.deploy(elfNFT.address, merkleRoot, MAX_NFTS);
     await elfNFT.setOwner(minter.address);
   });
 
@@ -101,6 +103,26 @@ describe("Minter", function () {
         await minter.mint(1, merkleProof);
       } catch (error) {
         expect((error as Error)?.message).to.include("ALREADY_MINTED");
+      }
+    });
+
+    it("minter should not mint more than maxCount", async () => {
+      const leaves = merkleTree.getLeaves();
+
+      minter = minter.connect(wallet1);
+      const merkleProof1 = merkleTree.getHexProof(leaves[1]);
+      await minter.mint(1, merkleProof1);
+
+      minter = minter.connect(wallet2);
+      const merkleProof2 = merkleTree.getHexProof(leaves[2]);
+      await minter.mint(2, merkleProof2);
+
+      minter = minter.connect(wallet3);
+      const merkleProof3 = merkleTree.getHexProof(leaves[3]);
+      try {
+        await minter.mint(3, merkleProof3);
+      } catch (error) {
+        expect((error as Error)?.message).to.include("Max count reached");
       }
     });
 

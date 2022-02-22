@@ -41,9 +41,10 @@ contract ElfNFT is ERC721, Authorizable {
         return "https://nft.element.fi/nft/";
     }
 
+    /// @notice Mints a new NFT if it hasn't already been minted
+    /// @param to the address that will own the tokwn
+    /// @param tokenId the id of the NFT to be minted
     function mint(address to, uint256 tokenId) public onlyOwner {
-        // TODO: add merkle checking in here
-        // TODO: add a check to make sure the tokenId doesn't already exist
         _mint(to, tokenId);
     }
 }
