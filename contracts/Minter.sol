@@ -38,4 +38,10 @@ contract Minter is Authorizable {
     function setRewardsRoot(bytes32 _merkleRoot) public onlyOwner {
         merkleRoot = _merkleRoot;
     }
+
+    // because we may change conditions for minting down the road, allow
+    // transferring ownership of the NFT contract to a new minter.
+    function transferNFTOwnership(address newOwner) public onlyOwner {
+        elfNFT.setOwner(newOwner);
+    }
 }
