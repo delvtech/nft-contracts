@@ -6,6 +6,8 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 import "./Authorizable.sol";
 
 contract ElfNFT is ERC721, Authorizable {
+    bool public transfersLocked;
+
     using Strings for uint256;
 
     /// @notice constructor
@@ -14,9 +16,11 @@ contract ElfNFT is ERC721, Authorizable {
     constructor(
         string memory _name,
         string memory _symbol,
-        address _owner
+        address _owner,
+        bool _transfersLocked
     ) ERC721(_name, _symbol) {
         setOwner(_owner);
+        setTransfersLocked(_transfersLocked);
     }
 
     /// @notice retrieves the tokenURI, which will be a concatenation of the
@@ -34,6 +38,43 @@ contract ElfNFT is ERC721, Authorizable {
             bytes(baseURI).length > 0
                 ? string(abi.encodePacked(baseURI, tokenId.toString()))
                 : "";
+    }
+
+    function transferFrom(
+        address from,
+        address to,
+        uint256 id
+    ) public virtual override {
+        require(!transfersLocked, "TRANSFERS_LOCKED");
+
+        require(from == ownerOf[id], "WRONG_FROM");
+
+        require(to != address(0), "INVALID_RECIPIENT");
+
+        require(
+            msg.sender == from ||
+                msg.sender == getApproved[id] ||
+                isApprovedForAll[from][msg.sender],
+            "NOT_AUTHORIZED"
+        );
+
+        // Underflow of the sender's balance is impossible because we check for
+        // ownership above and the recipient's balance can't realistically overflow.
+        unchecked {
+            balanceOf[from]--;
+
+            balanceOf[to]++;
+        }
+
+        ownerOf[id] = to;
+
+        delete getApproved[id];
+
+        emit Transfer(from, to, id);
+    }
+
+    function setTransfersLocked(bool locked) public onlyOwner {
+        transfersLocked = locked;
     }
 
     /// @notice Base URI for computing tokenURI

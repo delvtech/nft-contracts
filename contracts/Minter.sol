@@ -39,6 +39,10 @@ contract Minter is Authorizable {
         merkleRoot = _merkleRoot;
     }
 
+    function setTransfersLocked(bool locked) public onlyOwner {
+        elfNFT.setTransfersLocked(locked);
+    }
+
     // because we may change conditions for minting down the road, allow
     // transferring ownership of the NFT contract to a new minter.
     function transferNFTOwnership(address newOwner) public onlyOwner {
