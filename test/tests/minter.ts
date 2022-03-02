@@ -36,11 +36,13 @@ describe("Minter", function () {
 
     const tokenDeployer = new ElfNFT__factory(deployer);
     const minterDeployer = new Minter__factory(deployer);
+    const transfersLocked = true;
 
     elfNFT = await tokenDeployer.deploy(
       "Elfie NFT",
       "ELFNFT",
-      deployer.address
+      deployer.address,
+      transfersLocked
     );
 
     minter = await minterDeployer.deploy(elfNFT.address, merkleRoot);
