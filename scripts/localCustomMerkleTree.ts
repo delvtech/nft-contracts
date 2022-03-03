@@ -1,7 +1,5 @@
 import { ethers } from "hardhat";
-
-const GOERLI_2_MERKLE_ROOT =
-  "0x57e03ba2cdef4ae7d67fa76bb3ecdd3f8069ad75e1594a9ee44cba8af9012e91";
+import { Account, getMerkleTree } from "test/helpers/merkle";
 
 async function main() {
   const signers = await ethers.getSigners();
@@ -13,6 +11,19 @@ async function main() {
   const tokenDeployer = await ethers.getContractFactory("ElfNFT");
   const minterDeployer = await ethers.getContractFactory("Minter");
 
+  // Account list for merkle proof
+  const accounts: Account[] = signers.map((signer, i) => ({
+    address: signer.address,
+    value: i,
+  }));
+
+  // Build merkle tree
+  const merkleTree = await getMerkleTree(accounts);
+  const merkleRoot = merkleTree.getHexRoot();
+
+  const leaves = merkleTree.getLeaves();
+  const proofs = leaves.map((leaf) => merkleTree.getHexProof(leaf));
+
   // Deploy contracts
   const elfNFT = await tokenDeployer.deploy(
     "Elfie NFT",
@@ -20,16 +31,14 @@ async function main() {
     deployer.address
   );
 
-  const minter = await minterDeployer.deploy(
-    elfNFT.address,
-    GOERLI_2_MERKLE_ROOT
-  );
+  const minter = await minterDeployer.deploy(elfNFT.address, merkleRoot);
 
   // Set owner for nft contract to minter
   await elfNFT.setOwner(minter.address);
 
   console.log("nft contract deployed at ", elfNFT.address);
   console.log("minter contract deployed at ", minter.address);
+  console.log("Merkle proofs for first 3 test accounts ", proofs.slice(0, 3));
 }
 
 main()
