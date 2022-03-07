@@ -1,11 +1,14 @@
-import "tsconfig-paths/register";
 import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
+import "dotenv/config";
 import "hardhat-gas-reporter";
 import "solidity-coverage";
+import "tsconfig-paths/register";
 
-import { HardhatUserConfig } from "hardhat/config";
+import { ethers, providers } from "ethers";
 import { existsSync, readFileSync } from "fs";
+import { HardhatUserConfig, task, types } from "hardhat/config";
+import { updateMerkleRoot } from "scripts/updateMerkleRoot";
 
 const EXPECTED_ACCOUNT_FILE = "accounts.json";
 
@@ -23,6 +26,30 @@ const getAddresses = (): string[] | undefined => {
 };
 
 const addresses = getAddresses();
+
+const { PRIVATE_KEY, ALCHEMY_GOERLI_RPC_HOST } = process.env;
+
+task("updateMerkleRoot", "updates the merkle root")
+  .addParam("merkleRoot", "The new merkle root", undefined, types.string)
+  .setAction(async (taskArgs: { merkleRoot: string }) => {
+    const { merkleRoot } = taskArgs;
+
+    if (!PRIVATE_KEY) {
+      console.log("ERROR: no private key provided");
+      return;
+    }
+
+    const localhostProvider = new providers.JsonRpcProvider(
+      ALCHEMY_GOERLI_RPC_HOST
+    );
+
+    const owner = new ethers.Wallet(PRIVATE_KEY, localhostProvider);
+
+    const ownerAddress = owner.address;
+    console.log("ownerAddress", ownerAddress);
+
+    await updateMerkleRoot(owner, merkleRoot);
+  });
 
 const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",

@@ -10,14 +10,15 @@
       "paths": {
         "test": ["./test"],
         "test/*": ["./test/*"],
-        "typechain": ["./typechain"],
-        "typechain/*": ["./typechain/*"],
-        "scripts/*": ["./scripts/*"]
+        "scripts": ["./scripts"],
+        "scripts/*": ["./scripts/*"],
+        "typechain": ["./typechain-types"],
+        "typechain/*": ["./typechain-types/*"],
       },
     },
     "include": [
       "./test",
-      "./typechain",
+      "./typechain-types",
       "./scripts"
     ],
     "files": ["./hardhat.config.ts"]
