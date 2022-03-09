@@ -10,6 +10,8 @@ contract ElfNFT is ERC721, Authorizable {
 
     string public baseURI;
 
+    uint256 public count;
+
     /// @notice constructor
     /// @param _name the name of the NFT
     /// @param _symbol the symbol of the NFT
@@ -46,5 +48,6 @@ contract ElfNFT is ERC721, Authorizable {
 
     function mint(address to, uint256 tokenId) public onlyOwner {
         _mint(to, tokenId);
+        count++;
     }
 }
