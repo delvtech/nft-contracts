@@ -9,3 +9,4 @@ gasReporterOutput.json
 coverage.json
 coverage/
 accounts.json
+.env
