@@ -4,6 +4,7 @@ import "dotenv/config";
 import "hardhat-gas-reporter";
 import "solidity-coverage";
 import "tsconfig-paths/register";
+import "@nomiclabs/hardhat-etherscan";
 
 import { ethers, providers } from "ethers";
 import { existsSync, readFileSync } from "fs";
@@ -102,6 +103,9 @@ const config: HardhatUserConfig = {
             count: 5,
           },
     },
+  },
+  etherscan: {
+    apiKey: process.env.ETHERSCAN_API_KEY,
   },
 };
 
