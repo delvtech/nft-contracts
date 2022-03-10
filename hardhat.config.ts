@@ -29,7 +29,7 @@ const getAddresses = (): string[] | undefined => {
 
 const addresses = getAddresses();
 
-const { PRIVATE_KEY, ALCHEMY_GOERLI_RPC_HOST } = process.env;
+const { PRIVATE_KEY = "", ALCHEMY_GOERLI_RPC_HOST } = process.env;
 
 task("updateMerkleRoot", "updates the merkle root")
   .addParam("merkleRoot", "The new merkle root", undefined, types.string)
@@ -102,6 +102,10 @@ const config: HardhatUserConfig = {
             accountsBalance: "100000000000000000000000", // 100000 ETH
             count: 5,
           },
+    },
+    goerli: {
+      url: ALCHEMY_GOERLI_RPC_HOST,
+      accounts: [PRIVATE_KEY],
     },
   },
   etherscan: {

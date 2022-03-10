@@ -24,24 +24,23 @@ async function main() {
   // deploy elf nft contract
   const nftContract = await deployElfNFT(
     deployer,
+    GOERLI_CHAIN_ID,
     "Elfie NFT",
     "ELFNFT",
-    "ipfs.io/ipfs/abc",
-    GOERLI_CHAIN_ID
+    "ipfs.io/ipfs/abc"
   );
-
-  console.log("nftContract", nftContract.address);
 
   // authorize the deployer before we transfer ownership to the minter contract
   // so it can set the baseURI
   await nftContract.connect(deployer).authorize(deployer.address);
+  console.log("deployer address ", deployer, " authoriazed on nft contract");
 
   const minterContract = await deployMinter(
     deployer,
+    GOERLI_CHAIN_ID,
     nftContract.address,
     MERKLE_ROOT
   );
-  console.log("minterContract", minterContract.address);
 
   await nftContract.setOwner(minterContract.address);
   console.log("owner set to minter address");
