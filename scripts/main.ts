@@ -33,7 +33,7 @@ async function main() {
   // authorize the deployer before we transfer ownership to the minter contract
   // so it can set the baseURI
   await nftContract.connect(deployer).authorize(deployer.address);
-  console.log("deployer address ", deployer, " authoriazed on nft contract");
+  console.log("deployer address ", deployer, " authorized on nft contract");
 
   const minterContract = await deployMinter(
     deployer,
