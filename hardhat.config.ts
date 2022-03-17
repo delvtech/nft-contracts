@@ -1,11 +1,16 @@
-import "tsconfig-paths/register";
 import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
+import "dotenv/config";
 import "hardhat-gas-reporter";
 import "solidity-coverage";
+import "tsconfig-paths/register";
+import "@nomiclabs/hardhat-etherscan";
 
-import { HardhatUserConfig } from "hardhat/config";
+import { ethers, providers } from "ethers";
 import { existsSync, readFileSync } from "fs";
+import { HardhatUserConfig, task, types } from "hardhat/config";
+import { updateMerkleRoot } from "scripts/updateMerkleRoot";
+import { updateBaseURI } from "scripts/updateBaseURI";
 
 const EXPECTED_ACCOUNT_FILE = "accounts.json";
 
@@ -23,6 +28,52 @@ const getAddresses = (): string[] | undefined => {
 };
 
 const addresses = getAddresses();
+
+const { PRIVATE_KEY = "", ALCHEMY_GOERLI_RPC_HOST } = process.env;
+
+task("updateMerkleRoot", "updates the merkle root")
+  .addParam("merkleRoot", "The new merkle root", undefined, types.string)
+  .setAction(async (taskArgs: { merkleRoot: string }) => {
+    const { merkleRoot } = taskArgs;
+
+    if (!PRIVATE_KEY) {
+      console.log("ERROR: no private key provided");
+      return;
+    }
+
+    const localhostProvider = new providers.JsonRpcProvider(
+      ALCHEMY_GOERLI_RPC_HOST
+    );
+
+    const owner = new ethers.Wallet(PRIVATE_KEY, localhostProvider);
+
+    const ownerAddress = owner.address;
+    console.log("ownerAddress", ownerAddress);
+
+    await updateMerkleRoot(owner, merkleRoot);
+  });
+
+task("updateBaseURI", "updates the base URI of the token contract")
+  .addParam("baseURI", "The new base URI", undefined, types.string)
+  .setAction(async (taskArgs: { baseURI: string }) => {
+    const { baseURI } = taskArgs;
+
+    if (!PRIVATE_KEY) {
+      console.log("ERROR: no private key provided");
+      return;
+    }
+
+    const localhostProvider = new providers.JsonRpcProvider(
+      ALCHEMY_GOERLI_RPC_HOST
+    );
+
+    const owner = new ethers.Wallet(PRIVATE_KEY, localhostProvider);
+
+    const ownerAddress = owner.address;
+    console.log("ownerAddress", ownerAddress);
+
+    await updateBaseURI(owner, baseURI);
+  });
 
 const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",
@@ -52,6 +103,13 @@ const config: HardhatUserConfig = {
             count: 5,
           },
     },
+    goerli: {
+      url: ALCHEMY_GOERLI_RPC_HOST,
+      accounts: [PRIVATE_KEY],
+    },
+  },
+  etherscan: {
+    apiKey: process.env.ETHERSCAN_API_KEY,
   },
 };
 

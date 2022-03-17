@@ -40,7 +40,8 @@ describe("Minter", function () {
     elfNFT = await tokenDeployer.deploy(
       "Elfie NFT",
       "ELFNFT",
-      deployer.address
+      deployer.address,
+      "ipfs.io/ipfs/abc/"
     );
 
     minter = await minterDeployer.deploy(elfNFT.address, merkleRoot);
