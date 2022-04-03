@@ -37,9 +37,7 @@ contract ElfNFT is ERC721, Authorizable {
     {
         return
             bytes(baseURI).length > 0
-                ? string(
-                    abi.encodePacked(baseURI, "/", tokenId.toString(), ".png")
-                )
+                ? string(abi.encodePacked(baseURI, "/", tokenId.toString()))
                 : "";
     }
 
