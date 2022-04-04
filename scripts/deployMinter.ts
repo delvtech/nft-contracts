@@ -19,6 +19,10 @@ export async function deployMinter(
   const minterContract = await minterDeployer.deploy(...constructorArguments);
   console.log("minterContract deployed at ", minterContract.address);
 
+  // wait for contract to be deployed before verifying
+  console.log("waiting to verify");
+  await sleep(40000);
+
   try {
     await hre.run("verify:verify", {
       network: networkId,
@@ -31,4 +35,8 @@ export async function deployMinter(
 
   console.log("");
   return minterContract;
+}
+
+export function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }

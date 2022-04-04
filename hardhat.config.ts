@@ -29,7 +29,11 @@ const getAddresses = (): string[] | undefined => {
 
 const addresses = getAddresses();
 
-const { PRIVATE_KEY = "", ALCHEMY_GOERLI_RPC_HOST } = process.env;
+const {
+  PRIVATE_KEY = "",
+  ALCHEMY_GOERLI_RPC_HOST,
+  ALCHEMY_RINKEBY_RPC_HOST,
+} = process.env;
 
 task("updateMerkleRoot", "updates the merkle root")
   .addParam("merkleRoot", "The new merkle root", undefined, types.string)
@@ -54,7 +58,7 @@ task("updateMerkleRoot", "updates the merkle root")
   });
 
 task("updateBaseURI", "updates the base URI of the token contract")
-  .addParam("baseURI", "The new base URI", undefined, types.string)
+  .addParam("baseuri", "The new base URI", undefined, types.string)
   .setAction(async (taskArgs: { baseURI: string }) => {
     const { baseURI } = taskArgs;
 
@@ -105,6 +109,10 @@ const config: HardhatUserConfig = {
     },
     goerli: {
       url: ALCHEMY_GOERLI_RPC_HOST,
+      accounts: [PRIVATE_KEY],
+    },
+    rinkeby: {
+      url: ALCHEMY_RINKEBY_RPC_HOST,
       accounts: [PRIVATE_KEY],
     },
   },

@@ -22,10 +22,14 @@ export async function deployElfNFT(
     owner,
     baseURI,
   ];
-  console.log("constructorArguments", constructorArguments);
+  console.log("constructorArguments", ...constructorArguments);
 
   const nftContract = await nftDeployer.deploy(...constructorArguments);
   console.log("nftContract deployed at ", nftContract.address);
+
+  // wait for contract to be deployed before verifying
+  console.log("waiting to verify");
+  await sleep(40000);
 
   try {
     await hre.run("verify:verify", {
@@ -39,4 +43,7 @@ export async function deployElfNFT(
 
   console.log("");
   return nftContract;
+}
+export function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
