@@ -1,17 +1,16 @@
+import "@nomiclabs/hardhat-etherscan";
 import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
 import "dotenv/config";
-import "hardhat-gas-reporter";
-import "solidity-coverage";
-import "tsconfig-paths/register";
-import "@nomiclabs/hardhat-etherscan";
-
 import { ethers, providers } from "ethers";
 import { existsSync, readFileSync } from "fs";
+import "hardhat-gas-reporter";
 import { HardhatUserConfig, task, types } from "hardhat/config";
-import { updateMerkleRoot } from "scripts/updateMerkleRoot";
-import { updateBaseURI } from "scripts/updateBaseURI";
 import { HardhatNetworkAccountsUserConfig } from "hardhat/types";
+import { updateBaseURI } from "scripts/updateBaseURI";
+import { updateMerkleRoot } from "scripts/updateMerkleRoot";
+import "solidity-coverage";
+import "tsconfig-paths/register";
 
 const EXPECTED_ACCOUNT_FILE = "accounts.json";
 

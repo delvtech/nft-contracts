@@ -1,8 +1,8 @@
 import { BytesLike, Signer } from "ethers";
 import { Minter__factory } from "typechain";
-
 import { minterContractAddress } from "./addresses";
 
+// Helper function to update merkle root on mainnet
 export async function updateMerkleRoot(
   signer: Signer,
   merkleRoot: BytesLike
