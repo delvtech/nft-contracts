@@ -1,6 +1,6 @@
 import { BytesLike, Signer } from "ethers";
+import { Minter__factory } from "typechain";
 
-import { Minter__factory } from "../typechain-types/factories/Minter__factory";
 import { minterContractAddress } from "./addresses";
 
 export async function updateMerkleRoot(
