@@ -18,7 +18,7 @@ const EXPECTED_ACCOUNT_FILE = "accounts.json";
 // Expects a json file with a list of private keys
 const getAddresses = (): string[] | undefined => {
   if (existsSync(EXPECTED_ACCOUNT_FILE)) {
-    console.log("External list of addresses loaded.");
+    console.log("External list of addresses loaded. \n");
     const externalAccounts = readFileSync(EXPECTED_ACCOUNT_FILE);
     return JSON.parse(externalAccounts.toString());
   }
