@@ -11,7 +11,9 @@
     "build": "npx hardhat compile",
     "test": "npx hardhat test ./test/tests/*.ts --no-compile",
     "test-quick": "TS_NODE_TRANSPILE_ONLY=1 npx hardhat test ./test/tests/*.ts --no-compile",
-    "coverage": "COVERAGE=true npx hardhat coverage --solcoverjs \".solcover.js\" --testfiles \"./test/*.ts\""
+    "coverage": "COVERAGE=true npx hardhat coverage --solcoverjs \".solcover.js\" --testfiles \"./test/*.ts\"",
+    "dev": "npx hardhat node",
+    "deploy:local": "npx hardhat run scripts/local.ts --network localhost"
   },
   "husky": {
     "hooks": {
@@ -57,6 +59,7 @@
     "merkletreejs": "^0.2.24",
     "module-alias": "^2.2.2",
     "prettier": "^2.3.0",
+    "prettier-plugin-organize-imports": "^2.3.4",
     "prettier-plugin-solidity": "^1.0.0-beta.11",
     "solhint": "^3.3.5",
     "solhint-plugin-prettier": "0.0.5",
