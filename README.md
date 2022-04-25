@@ -34,7 +34,7 @@ cd nft-contracts
 npm install
 ```
 
-Create valid .env and provide external accounts to accounts.json. Check out our examples for help.
+Create valid .env and provide external accounts to accounts.json (private keys). Check out our examples for help.
 
 ### Build
 
