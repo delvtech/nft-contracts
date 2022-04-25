@@ -17,33 +17,68 @@ If you have a suggestion for a new feature, extension, or cool use case and want
 
 When contributing, please be sure to follow our contribution [guidelines](https://github.com/element-fi/nft-contracts/blob/master/CONTRIBUTING.md) when proposing any new code. Lastly, because Council is a community-driven governance protocol, any new code contributions are more likely to be accepted into future deployments of the protocol if they have been openly discussed within the community first.
 
-## Build and Testing
+## Getting started
 
-### 1. Getting Started (Prerequisites)
+### Install prerequisites
 
 - [Install npm](https://nodejs.org/en/download/)
 
-### 2. Setup
+### Setup
 
-```
+```bash
 git clone git@github.com:element-fi/nft-contracts.git
 ```
 
-```
-cd elf-contracts
+```bash
+cd nft-contracts
 npm install
 ```
 
-### 3. Build
+Create valid .env and provide external accounts to accounts.json. Check out our examples for help.
 
-```
+### Build
+
+```bash
 npm run build
 ```
 
-### 4. Test
+### Run locally
 
+Requires .env to have
+  - PRIVATE_KEY
+  - MERKLE_ROOT
+
+If you need a merkle root we have a helper script which builds a merkle tree from the external accounts you provided with accounts.json. This script will output the merkle tree and the merkle proofs.
+
+```bash
+npm run merkle:local
 ```
+
+```bash
+# start hardhat network
+npm run dev 
+
+# in another terminal
+npm run deploy:local
+```
+
+### Deploy
+
+Requires .env to have following variables. These will vary depending on target network.
+  - PRIVATE_KEY
+  - MERKLE_ROOT
+  - ALCHEMY_RPC_HOST
+  - CHAIN_ID
+
+```bash
+npm run deploy:mainnet
+```
+
+### Test
+
+```bash
 npm run test
 ```
+
 
 If you have any questions, feedback, ideas for improvement, or even further experiments to test out with Council, come join our [#governance](https://discord.gg/z4EsSuaYCd) discord channel to talk more about this!
