@@ -11,6 +11,7 @@ import { existsSync, readFileSync } from "fs";
 import { HardhatUserConfig, task, types } from "hardhat/config";
 import { updateMerkleRoot } from "scripts/updateMerkleRoot";
 import { updateBaseURI } from "scripts/updateBaseURI";
+import { HardhatNetworkAccountsUserConfig } from "hardhat/types";
 
 const EXPECTED_ACCOUNT_FILE = "accounts.json";
 
@@ -29,10 +30,20 @@ const getAddresses = (): string[] | undefined => {
 
 const addresses = getAddresses();
 
+const accounts: HardhatNetworkAccountsUserConfig = addresses
+  ? addresses.map((address) => ({
+      privateKey: address,
+      balance: "100000000000000000000000", // 100000 ETH
+    }))
+  : {
+      accountsBalance: "100000000000000000000000",
+      count: 5,
+    };
+
 const {
   PRIVATE_KEY = "",
-  ALCHEMY_GOERLI_RPC_HOST,
-  ALCHEMY_RINKEBY_RPC_HOST,
+  ALCHEMY_GOERLI_RPC_HOST = "",
+  ALCHEMY_RINKEBY_RPC_HOST = "",
 } = process.env;
 
 task("updateMerkleRoot", "updates the merkle root")
@@ -97,23 +108,15 @@ const config: HardhatUserConfig = {
   mocha: { timeout: 0 },
   networks: {
     hardhat: {
-      accounts: addresses
-        ? addresses.map((address) => ({
-            privateKey: address,
-            balance: "100000000000000000000000",
-          }))
-        : {
-            accountsBalance: "100000000000000000000000", // 100000 ETH
-            count: 5,
-          },
+      accounts,
     },
     goerli: {
       url: ALCHEMY_GOERLI_RPC_HOST,
-      accounts: [PRIVATE_KEY],
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
     rinkeby: {
       url: ALCHEMY_RINKEBY_RPC_HOST,
-      accounts: [PRIVATE_KEY],
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
   },
   etherscan: {
