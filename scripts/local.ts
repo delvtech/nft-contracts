@@ -1,35 +1,63 @@
-import { ethers } from "hardhat";
+import "dotenv/config";
+import { providers, Wallet } from "ethers";
 
-const GOERLI_2_MERKLE_ROOT =
-  "0x57e03ba2cdef4ae7d67fa76bb3ecdd3f8069ad75e1594a9ee44cba8af9012e91";
+import { deployElfNFT } from "./deployElfNFT";
+import { deployMinter } from "./deployMinter";
+
+import { ipfsBaseURI, localChainID } from "../constants";
+
+const { PRIVATE_KEY, MERKLE_ROOT } = process.env;
 
 async function main() {
-  const signers = await ethers.getSigners();
+  if (!PRIVATE_KEY) {
+    console.error(
+      "⛔️ No private key provided for the deployer. Add PRIVATE_KEY variable to env."
+    );
+    return;
+  }
 
-  // Deployer signer
-  const [deployer] = signers;
+  if (!MERKLE_ROOT) {
+    console.error(
+      "⛔️ No merkle root provided for minter contract. Add PRIVATE_KEY variable to env."
+    );
+    return;
+  }
 
-  // Build contract factories
-  const tokenDeployer = await ethers.getContractFactory("ElfNFT");
-  const minterDeployer = await ethers.getContractFactory("Minter");
+  const provider = new providers.JsonRpcProvider("http://localhost:8545");
+  const deployer = new Wallet(PRIVATE_KEY, provider);
 
-  // Deploy contracts
-  const elfNFT = await tokenDeployer.deploy(
-    "Elfie NFT",
-    "ELFNFT",
-    deployer.address
+  // Deploy NFT contract
+  const nftContract = await deployElfNFT(
+    deployer,
+    localChainID,
+    "Elf NFT",
+    "ELF",
+    ipfsBaseURI
   );
 
-  const minter = await minterDeployer.deploy(
-    elfNFT.address,
-    GOERLI_2_MERKLE_ROOT
+  /* 
+  Authorize the deployer before we transfer ownership to the minter contract 
+  so it can set the baseURI 
+  */
+  await nftContract.connect(deployer).authorize(deployer.address);
+
+  console.log(
+    "✅ Deployer address ",
+    deployer.address,
+    " authorized on NFT contract \n"
   );
 
-  // Set owner for nft contract to minter
-  await elfNFT.setOwner(minter.address);
+  // Deploy Minter contract
+  const minterContract = await deployMinter(
+    deployer,
+    localChainID,
+    nftContract.address,
+    MERKLE_ROOT
+  );
 
-  console.log("nft contract deployed at ", elfNFT.address);
-  console.log("minter contract deployed at ", minter.address);
+  await nftContract.setOwner(minterContract.address);
+  console.log("✅ Owner set to minter address \n");
+  console.log("🔥 Done");
 }
 
 main()
