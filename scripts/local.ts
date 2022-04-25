@@ -1,10 +1,8 @@
 import "dotenv/config";
 import { providers, Wallet } from "ethers";
-
+import { ipfsBaseURI, localChainID } from "../constants";
 import { deployElfNFT } from "./deployElfNFT";
 import { deployMinter } from "./deployMinter";
-
-import { ipfsBaseURI, localChainID } from "../constants";
 
 const { PRIVATE_KEY, MERKLE_ROOT } = process.env;
 

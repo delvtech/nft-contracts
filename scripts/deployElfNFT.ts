@@ -1,6 +1,5 @@
 import { Signer } from "ethers";
 import hre from "hardhat";
-
 import { ElfNFT } from "typechain/ElfNFT";
 import { ElfNFT__factory } from "typechain/factories/ElfNFT__factory";
 
