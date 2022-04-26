@@ -1,8 +1,8 @@
 import { Signer } from "ethers";
-
-import { ElfNFT__factory } from "../typechain-types/factories/ElfNFT__factory";
+import { ElfNFT__factory } from "typechain-types/factories/ElfNFT__factory";
 import { nftContractAddress } from "./addresses";
 
+// Helper function to update base uri on mainnet
 export async function updateBaseURI(
   signer: Signer,
   baseURI: string

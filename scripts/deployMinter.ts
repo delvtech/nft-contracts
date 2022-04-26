@@ -1,7 +1,8 @@
 import { BytesLike, Signer } from "ethers";
 import hre from "hardhat";
 import { Minter__factory } from "typechain-types/factories/Minter__factory";
-import { Minter } from "typechain-types/Minter";
+import { Minter } from "typechain/Minter";
+import { localChainID } from "../constants";
 
 export async function deployMinter(
   signer: Signer,
@@ -9,18 +10,24 @@ export async function deployMinter(
   nftAddress: string,
   merkleRoot: BytesLike
 ): Promise<Minter> {
-  console.log("deployMinter");
+  console.log("🚀 Deploying Minter... \n");
 
   const minterDeployer = new Minter__factory(signer);
 
   const constructorArguments: [string, BytesLike] = [nftAddress, merkleRoot];
-  console.log("constructorArguments", constructorArguments);
+  console.log("Constructor arguments");
+  console.table(constructorArguments);
 
   const minterContract = await minterDeployer.deploy(...constructorArguments);
-  console.log("minterContract deployed at ", minterContract.address);
+  console.log("✅ Minter contract deployed at", minterContract.address, "\n");
 
-  // wait for contract to be deployed before verifying
-  console.log("waiting to verify");
+  // Skip verification if local network
+  if (networkId === localChainID) {
+    return minterContract;
+  }
+
+  // Wait for contract to be deployed before verifying
+  console.log("⏳ Waiting to verify");
   await sleep(40000);
 
   try {
@@ -30,10 +37,10 @@ export async function deployMinter(
       constructorArguments,
     });
   } catch (error) {
-    console.log("Couldnt verify minter contract contract", error);
+    console.log("Could not verify minter contract contract", error);
   }
 
-  console.log("");
+  console.log("\n");
   return minterContract;
 }
 

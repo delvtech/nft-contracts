@@ -1,7 +1,5 @@
 import "dotenv/config";
-
 import { ethers, providers } from "ethers";
-import { AbiCoder } from "ethers/lib/utils";
 import { makeMerkle } from "test/helpers/makeMerkle";
 import { Minter__factory } from "typechain-types/factories/Minter__factory";
 

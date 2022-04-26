@@ -1,23 +1,23 @@
+import "@nomiclabs/hardhat-etherscan";
 import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
 import "dotenv/config";
-import "hardhat-gas-reporter";
-import "solidity-coverage";
-import "tsconfig-paths/register";
-import "@nomiclabs/hardhat-etherscan";
-
 import { ethers, providers } from "ethers";
 import { existsSync, readFileSync } from "fs";
+import "hardhat-gas-reporter";
 import { HardhatUserConfig, task, types } from "hardhat/config";
-import { updateMerkleRoot } from "scripts/updateMerkleRoot";
+import { HardhatNetworkAccountsUserConfig } from "hardhat/types";
 import { updateBaseURI } from "scripts/updateBaseURI";
+import { updateMerkleRoot } from "scripts/updateMerkleRoot";
+import "solidity-coverage";
+import "tsconfig-paths/register";
 
 const EXPECTED_ACCOUNT_FILE = "accounts.json";
 
 // Expects a json file with a list of private keys
 const getAddresses = (): string[] | undefined => {
   if (existsSync(EXPECTED_ACCOUNT_FILE)) {
-    console.log("External list of addresses loaded.");
+    console.log("External list of addresses loaded. \n");
     const externalAccounts = readFileSync(EXPECTED_ACCOUNT_FILE);
     return JSON.parse(externalAccounts.toString());
   }
@@ -29,10 +29,20 @@ const getAddresses = (): string[] | undefined => {
 
 const addresses = getAddresses();
 
+const accounts: HardhatNetworkAccountsUserConfig = addresses
+  ? addresses.map((address) => ({
+      privateKey: address,
+      balance: "100000000000000000000000", // 100000 ETH
+    }))
+  : {
+      accountsBalance: "100000000000000000000000",
+      count: 5,
+    };
+
 const {
   PRIVATE_KEY = "",
-  ALCHEMY_GOERLI_RPC_HOST,
-  ALCHEMY_RINKEBY_RPC_HOST,
+  ALCHEMY_GOERLI_RPC_HOST = "",
+  ALCHEMY_RINKEBY_RPC_HOST = "",
 } = process.env;
 
 task("updateMerkleRoot", "updates the merkle root")
@@ -97,23 +107,15 @@ const config: HardhatUserConfig = {
   mocha: { timeout: 0 },
   networks: {
     hardhat: {
-      accounts: addresses
-        ? addresses.map((address) => ({
-            privateKey: address,
-            balance: "100000000000000000000000",
-          }))
-        : {
-            accountsBalance: "100000000000000000000000", // 100000 ETH
-            count: 5,
-          },
+      accounts,
     },
     goerli: {
       url: ALCHEMY_GOERLI_RPC_HOST,
-      accounts: [PRIVATE_KEY],
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
     rinkeby: {
       url: ALCHEMY_RINKEBY_RPC_HOST,
-      accounts: [PRIVATE_KEY],
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
   },
   etherscan: {

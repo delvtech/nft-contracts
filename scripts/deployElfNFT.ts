@@ -1,8 +1,8 @@
 import { Signer } from "ethers";
 import hre from "hardhat";
-
-import { ElfNFT } from "typechain-types/ElfNFT";
 import { ElfNFT__factory } from "typechain-types/factories/ElfNFT__factory";
+import { ElfNFT } from "typechain/ElfNFT";
+import { localChainID } from "../constants";
 
 export async function deployElfNFT(
   signer: Signer,
@@ -11,7 +11,7 @@ export async function deployElfNFT(
   symbol: string,
   baseURI: string
 ): Promise<ElfNFT> {
-  console.log("deployElfNFT");
+  console.log("🚀 Deploying ElfNFT... \n");
 
   const nftDeployer = new ElfNFT__factory(signer);
   const owner = await signer.getAddress();
@@ -22,13 +22,20 @@ export async function deployElfNFT(
     owner,
     baseURI,
   ];
-  console.log("constructorArguments", ...constructorArguments);
+
+  console.log("Constructor arguments");
+  console.table(constructorArguments);
 
   const nftContract = await nftDeployer.deploy(...constructorArguments);
-  console.log("nftContract deployed at ", nftContract.address);
+  console.log("✅ NFT contract deployed at", nftContract.address, "\n");
 
-  // wait for contract to be deployed before verifying
-  console.log("waiting to verify");
+  // Skip verification if local network
+  if (networkId === localChainID) {
+    return nftContract;
+  }
+
+  // Wait for contract to be deployed before verifying
+  console.log("⏳ Waiting to verify");
   await sleep(40000);
 
   try {
@@ -38,10 +45,10 @@ export async function deployElfNFT(
       constructorArguments,
     });
   } catch (error) {
-    console.log("Couldnt verify ElfNFT contract", error);
+    console.log("Could not verify ElfNFT contract", error);
   }
 
-  console.log("");
+  console.log("\n");
   return nftContract;
 }
 export function sleep(ms: number) {
