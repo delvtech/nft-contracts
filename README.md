@@ -47,11 +47,12 @@ npm run build
 Requires .env to have
   - PRIVATE_KEY
   - MERKLE_ROOT
+  - IPFS_ROOT
 
 If you need a merkle root we have a helper script which builds a merkle tree from the external accounts you provided with accounts.json. This script will output the merkle tree and the merkle proofs.
 
 ```bash
-npm run merkle:local
+npm run generate-merkle
 ```
 
 ```bash
@@ -59,7 +60,7 @@ npm run merkle:local
 npm run dev 
 
 # in another terminal
-npm run deploy:local
+npm run deploy-local
 ```
 
 ### Deploy
@@ -69,9 +70,10 @@ Requires .env to have following variables. These will vary depending on target n
   - MERKLE_ROOT
   - ALCHEMY_RPC_HOST
   - CHAIN_ID
+  - IPFS_ROOT
 
 ```bash
-npm run deploy:mainnet
+npm run deploy-mainnet
 ```
 
 ### Test

@@ -1,8 +1,7 @@
 import "dotenv/config";
-
 import { ethers, providers } from "ethers";
 import { makeMerkle } from "test/helpers/makeMerkle";
-import { Minter__factory } from "typechain/factories/Minter__factory";
+import { Minter__factory } from "typechain-types/factories/Minter__factory";
 
 const { PRIVATE_KEY, MERKLE_ROOT, ALCHEMY_RPC_HOST, CHAIN_ID } = process.env;
 

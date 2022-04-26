@@ -1,7 +1,8 @@
 import { Signer } from "ethers";
 import hre from "hardhat";
+import { ElfNFT__factory } from "typechain-types/factories/ElfNFT__factory";
 import { ElfNFT } from "typechain/ElfNFT";
-import { ElfNFT__factory } from "typechain/factories/ElfNFT__factory";
+import { localChainID } from "../constants";
 
 export async function deployElfNFT(
   signer: Signer,
@@ -29,7 +30,7 @@ export async function deployElfNFT(
   console.log("✅ NFT contract deployed at", nftContract.address, "\n");
 
   // Skip verification if local network
-  if (networkId === 8545) {
+  if (networkId === localChainID) {
     return nftContract;
   }
 

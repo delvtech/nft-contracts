@@ -1,10 +1,10 @@
 import "dotenv/config";
 import { providers, Wallet } from "ethers";
-import { ipfsBaseURI } from "../constants";
 import { deployElfNFT } from "./deployElfNFT";
 import { deployMinter } from "./deployMinter";
 
-const { PRIVATE_KEY, MERKLE_ROOT, ALCHEMY_RPC_HOST, CHAIN_ID } = process.env;
+const { PRIVATE_KEY, MERKLE_ROOT, ALCHEMY_RPC_HOST, CHAIN_ID, IPFS_ROOT } =
+  process.env;
 
 async function main() {
   const chainID = Number(CHAIN_ID) || 1;
@@ -37,6 +37,13 @@ async function main() {
     return;
   }
 
+  if (!IPFS_ROOT) {
+    console.error(
+      "⛔️ No ipfs content identifier root provided. Add IPFS_ROOT variable to env."
+    );
+    return;
+  }
+
   if (chainID !== 9000) {
     return;
   }
@@ -50,7 +57,7 @@ async function main() {
     chainID,
     "Elfie NFT",
     "ELFNFT",
-    ipfsBaseURI
+    IPFS_ROOT
   );
 
   /* 

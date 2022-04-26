@@ -13,9 +13,9 @@
     "test-quick": "TS_NODE_TRANSPILE_ONLY=1 npx hardhat test ./test/tests/*.ts --no-compile",
     "coverage": "COVERAGE=true npx hardhat coverage --solcoverjs \".solcover.js\" --testfiles \"./test/*.ts\"",
     "dev": "npx hardhat node",
-    "deploy:local": "npx hardhat run scripts/local.ts --network localhost",
-    "deploy:mainnet": "npx hardhat run scripts/main.ts --network mainnet",
-    "merkle:local": "npx hardhat run scripts/merkle.ts"
+    "deploy-local": "npx hardhat run scripts/local.ts --network localhost",
+    "deploy-mainnet": "npx hardhat run scripts/main.ts --network mainnet",
+    "generate-merkle": "npx hardhat run scripts/merkle.ts"
   },
   "husky": {
     "hooks": {

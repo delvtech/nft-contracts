@@ -1,7 +1,8 @@
 import { BytesLike, Signer } from "ethers";
 import hre from "hardhat";
-import { Minter__factory } from "typechain/factories/Minter__factory";
+import { Minter__factory } from "typechain-types/factories/Minter__factory";
 import { Minter } from "typechain/Minter";
+import { localChainID } from "../constants";
 
 export async function deployMinter(
   signer: Signer,
@@ -21,7 +22,7 @@ export async function deployMinter(
   console.log("✅ Minter contract deployed at", minterContract.address, "\n");
 
   // Skip verification if local network
-  if (networkId === 8545) {
+  if (networkId === localChainID) {
     return minterContract;
   }
 

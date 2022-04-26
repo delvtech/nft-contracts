@@ -1,5 +1,5 @@
 import { Signer } from "ethers";
-import { ElfNFT__factory } from "typechain/factories/ElfNFT__factory";
+import { ElfNFT__factory } from "typechain-types/factories/ElfNFT__factory";
 import { nftContractAddress } from "./addresses";
 
 // Helper function to update base uri on mainnet
@@ -10,8 +10,10 @@ export async function updateBaseURI(
   const nftContract = ElfNFT__factory.connect(nftContractAddress, signer);
   const oldBaseURI = await nftContract.baseURI();
   console.log("oldBaseURI", oldBaseURI);
+
   const transaction = await nftContract.setBaseURI(baseURI);
   await transaction.wait(1);
+
   const newBaseURI = await nftContract.baseURI();
   console.log("newBaseURI", newBaseURI);
 }

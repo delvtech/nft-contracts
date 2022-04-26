@@ -1,10 +1,10 @@
 import "dotenv/config";
 import { providers, Wallet } from "ethers";
-import { ipfsBaseURI, localChainID } from "../constants";
+import { localChainID, localhostProvider } from "../constants";
 import { deployElfNFT } from "./deployElfNFT";
 import { deployMinter } from "./deployMinter";
 
-const { PRIVATE_KEY, MERKLE_ROOT } = process.env;
+const { PRIVATE_KEY, MERKLE_ROOT, IPFS_ROOT } = process.env;
 
 async function main() {
   if (!PRIVATE_KEY) {
@@ -21,7 +21,14 @@ async function main() {
     return;
   }
 
-  const provider = new providers.JsonRpcProvider("http://localhost:8545");
+  if (!IPFS_ROOT) {
+    console.error(
+      "⛔️ No ipfs content identifier root provided. Add IPFS_ROOT variable to env."
+    );
+    return;
+  }
+
+  const provider = new providers.JsonRpcProvider(localhostProvider);
   const deployer = new Wallet(PRIVATE_KEY, provider);
 
   // Deploy NFT contract
@@ -30,7 +37,7 @@ async function main() {
     localChainID,
     "Elf NFT",
     "ELF",
-    ipfsBaseURI
+    IPFS_ROOT
   );
 
   /* 
